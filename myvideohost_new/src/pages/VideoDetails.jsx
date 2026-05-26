@@ -43,11 +43,15 @@ function VideoDetails({ currentUser }) {
     };
     //підписка
     const handleSubscribe = async () => {
-        await axios.post('http://localhost:3000/api/subscribe', {
-            userId: currentUser.id,
-            channelId: video.authorId
-        });
-        setIsSubscribed(true);
+        try {
+            const response = await axios.post('http://localhost:3000/api/subscribe', {
+                userId: currentUser.id,
+                channelId: video.authorId
+            });
+            setIsSubscribed(response.data.isSubscribed);
+        } catch (error) {
+            console.error("Помилка при підписці/відписці:", error);
+        }
     };
 
     if (!video) return <p>Завантаження...</p>;
@@ -68,7 +72,6 @@ function VideoDetails({ currentUser }) {
                     <button onClick={handleShare}>🔗 Поділитися</button>
                     <button
                         onClick={handleSubscribe}
-                        disabled={isSubscribed}
                         style={{
                             backgroundColor: isSubscribed ? '#94a3b8' : '#3b82f6',
                             cursor: isSubscribed ? 'default' : 'pointer'
