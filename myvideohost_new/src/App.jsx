@@ -28,7 +28,16 @@ function App() {
       setUserNotifications([]);
     }
   };
-
+    const handleNotificationClick = async (notificationId) => {
+    try {
+      await axios.post('http://localhost:3000/api/notifications/read', {
+        id: notificationId
+      });
+      setUserNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (error) {
+      console.error("Помилка при читанні сповіщення:", error);
+    }
+  };
   // виклик при зміні користувача
   useEffect(() => {
     fetchNotifications();
@@ -51,7 +60,7 @@ function App() {
             </div>
             {userNotifications.map(n => (
               <div key={n.id} style={{ fontSize: '12px', color: '#dc2626', marginTop: '5px' }}>
-                <Link to={`/video/${n.videoId}`}>{n.message}</Link>
+                <Link to={`/video/${n.videoId}`} onClick={() => handleNotificationClick(n.id)}>{n.message}</Link>
               </div>
             ))}
           </div>
