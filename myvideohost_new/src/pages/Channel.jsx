@@ -25,11 +25,15 @@ function Channel({ currentUser }) {
     }, [authorId, currentUser.id]); // щоб статус оновлювався, якщо зміна акаунту
     //підписка
     const handleSubscribe = async () => {
-        await axios.post('http://localhost:3000/api/subscribe', {
-            userId: currentUser.id,
-            channelId: parseInt(authorId)
-        });
-        setIsSubscribed(true);
+        try {
+            const response = await axios.post('http://localhost:3000/api/subscribe', {
+                userId: currentUser.id,
+                channelId: authorId
+            });
+            setIsSubscribed(response.data.isSubscribed);
+        } catch (error) {
+            console.error("Помилка при підписці/відписці:", error);
+        }
     };
 
     const channelName = videos.length > 0 ? videos[0].authorName : `Користувач #${authorId}`;
@@ -40,7 +44,6 @@ function Channel({ currentUser }) {
             <h2>📺 Канал користувача {channelName}</h2>
             <button
                 onClick={handleSubscribe}
-                disabled={isSubscribed}
                 style={{
                     marginBottom: '20px',
                     backgroundColor: isSubscribed ? '#94a3b8' : '#3b82f6',
